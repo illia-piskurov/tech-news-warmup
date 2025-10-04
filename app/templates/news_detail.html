@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="uk">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>{{ article.title }}</title>
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
+{% block content %}
 
 <body>
     <div class="news-container">
@@ -27,4 +22,4 @@
     </div>
 </body>
 
-</html>
+{% endblock %}

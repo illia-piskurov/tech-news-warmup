@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Tech News{% endblock %}</title>
+    {% if ga_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', '{{ ga_id }}');
+    </script>
+    {% endif %}
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="site-title">
+            <a href="/" title="На главную">Останні новини IT</a>
+        </div>
+
+        <nav>
+            <a href="/" class="nav-link">Новини</a>
+        </nav>
+    </header>
+
+    <main> {% block content %}{% endblock %} </main>
+
+    <footer>
+        <p>&copy; 2025 Останні новини ІТ</p>
+    </footer>
+</body>
+
+</html>

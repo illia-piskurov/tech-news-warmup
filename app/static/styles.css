@@ -84,3 +84,53 @@ small {
 .news-footer a:hover {
     text-decoration: underline;
 }
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #fff;
+    
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+    border-bottom: none;
+}
+
+.site-title a {
+    color: #222;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.site-title a:hover {
+    color: #007acc;
+    text-decoration: none;
+}
+
+header nav .nav-link {
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+header nav .nav-link:hover {
+    color: #007acc;
+    text-decoration: none;
+    background-color: #f0f0f0;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    font-size: 14px;
+    color: #666;
+    border-top: 1px solid #ccc;
+}

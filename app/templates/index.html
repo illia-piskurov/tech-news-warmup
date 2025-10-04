@@ -1,36 +1,18 @@
-<!DOCTYPE html>
-<html lang="uk">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Tech News</title>
-    {% if ga_id %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', '{{ ga_id }}');
-    </script>
-    {% endif %}
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
+{% block content %}
 
-<body>
-    <h1>Останні новини IT</h1>
-    <ul>
-        {% for article in articles %}
-        <li style="margin-bottom:20px;">
-            <a href="/news/{{ article.id }}">{{ article.title }}</a>
-            <p>{{ article.summary }}</p>
-            {% if article.image_url %}
-            <img src="{{ article.image_url }}" alt="Image" width="300">
-            {% endif %}
-            <br>
-            <small>{{ article.pub_date }}</small>
-        </li>
-        {% endfor %}
-    </ul>
-</body>
-
-</html>
+<ul>
+    {% for article in articles %}
+    <li>
+        <a href="/news/{{ article.id }}">{{ article.title }}</a>
+        <p>{{ article.summary }}</p>
+        {% if article.image_url %}
+        <img src="{{ article.image_url }}" alt="Image" width="300">
+        {% endif %}
+        <br>
+        <small>{{ article.pub_date }}</small>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
