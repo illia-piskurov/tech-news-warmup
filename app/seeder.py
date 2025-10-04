@@ -1,7 +1,8 @@
 import asyncio
 import logging
+import random
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 import httpx
@@ -86,7 +87,9 @@ async def seed_articles(db: Database, settings: config.Settings):
 
             title = news_article.title if news_article.title else "Untitled"
             full_content = news_article.text if news_article.text else ""
-            summary = news_article.summary if news_article.summary else ""
+            summary = (
+                news_article.meta_description if news_article.meta_description else ""
+            )
 
             if not summary and full_content:
                 summary = full_content[:200].strip()
@@ -95,11 +98,14 @@ async def seed_articles(db: Database, settings: config.Settings):
                 summary += "..."
 
             image_url = news_article.top_img if news_article.top_img else None
-            pub_date = (
-                news_article.publish_date
-                if news_article.publish_date
-                else datetime.now(tz=timezone.utc)
-            )
+            pub_date = news_article.publish_date if news_article.publish_date else None
+
+            if not pub_date:
+                NOW = datetime.now(tz=timezone.utc)
+                MAX_DAYS_OFFSET = 90
+                random_days = random.randint(-MAX_DAYS_OFFSET, 0)
+                pub_date = NOW + timedelta(days=random_days)
+                pub_date = pub_date.replace(second=0, microsecond=0)
 
             ins = articles.insert().values(
                 title=title,
