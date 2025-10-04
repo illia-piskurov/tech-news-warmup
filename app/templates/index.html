@@ -21,7 +21,7 @@
     <ul>
         {% for article in articles %}
         <li style="margin-bottom:20px;">
-            <a href="{{ article.link }}" target="_blank">{{ article.title }}</a>
+            <a href="/news/{{ article.id }}">{{ article.title }}</a>
             <p>{{ article.summary }}</p>
             {% if article.image_url %}
             <img src="{{ article.image_url }}" alt="Image" width="300">

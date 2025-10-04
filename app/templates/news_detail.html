@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ article.title }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div class="news-container">
+        <h1>{{ article.title }}</h1>
+        <small>{{ article.pub_date }}</small>
+
+        {% if article.image_url %}
+        <img src="{{ article.image_url }}" alt="Image">
+        {% endif %}
+
+        <div>
+            {{ article.content or article.summary }}
+        </div>
+
+        <div class="news-footer">
+            <!-- <a href="{{ article.link }}" target="_blank">Оригінал</a> -->
+            <a href="/">Назад до списку новин</a>
+        </div>
+    </div>
+</body>
+
+</html>

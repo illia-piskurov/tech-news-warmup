@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import datetime, timezone
 from time import struct_time
@@ -6,11 +7,46 @@ from typing import Any, List, Optional
 import feedparser
 import httpx
 from databases import Database
-from sqlalchemy import insert, select
+from newspaper import Article
+from sqlalchemy import insert, select, update
 
 from .models import articles
 
 logger = logging.getLogger(__name__)
+
+
+async def fetch_full_content(db: Database, article_id: int, url: str) -> Optional[str]:
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.get(url)
+            resp.raise_for_status()
+    except Exception as e:
+        logger.exception("Failed to fetch article page %s: %s", url, e)
+        return None
+
+    try:
+        news_article = Article(url)
+        news_article.set_html(resp.text)
+        news_article.parse()
+        full_text = news_article.text
+    except Exception as e:
+        logger.exception("Failed to parse article %s: %s", url, e)
+        return None
+
+    try:
+        query = (
+            update(articles)
+            .where(articles.c.id == article_id)
+            .values(content=full_text, fetched_at=datetime.now(tz=timezone.utc))
+        )
+        await db.execute(query)
+        logger.info("Full content saved for article %s", article_id)
+        return full_text
+    except Exception as e:
+        logger.exception(
+            "Failed to update full content for article %s: %s", article_id, e
+        )
+        return None
 
 
 async def fetch_rss(
@@ -34,6 +70,8 @@ async def fetch_rss(
     if feed.bozo:
         logger.warning("RSS parse error for %s (bozo=%s)", rss_url, feed.bozo_exception)
         return new_articles
+
+    tasks = []
 
     for entry in feed.entries[:max_articles]:
         link: Optional[str] = getattr(entry, "link", None)
@@ -84,16 +122,21 @@ async def fetch_rss(
             link=link,
             pub_date=pub_date,
             summary=summary,
-            content="",  # full content parsing can be added later
+            content="",
             image_url=image_url,
             fetched_at=datetime.now(tz=timezone.utc),
         )
         try:
-            await db.execute(ins)
+            article_id = await db.execute(ins)
             new_articles.append(title)
             logger.info("Added article: %s", title)
+
+            tasks.append(fetch_full_content(db, article_id, link))
         except Exception as e:
             logger.exception("Failed to insert article '%s': %s", title, e)
+
+    if tasks:
+        await asyncio.gather(*tasks)
 
     logger.info("Total new articles added: %s", len(new_articles))
     return new_articles

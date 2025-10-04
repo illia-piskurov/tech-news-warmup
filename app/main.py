@@ -113,5 +113,21 @@ async def index(
     )
 
 
+@app.get("/news/{article_id}")
+async def news_detail(
+    article_id: int,
+    request: Request,
+    db: Annotated[Database, Depends(get_db)],
+):
+    query = articles.select().where(articles.c.id == article_id)
+    article = await db.fetch_one(query)
+    if not article:
+        return {"error": "Article not found"}
+
+    return templates.TemplateResponse(
+        "news_detail.html", {"request": request, "article": article}
+    )
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
