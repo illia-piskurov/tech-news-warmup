@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   fastapi-app:
     build:
@@ -8,6 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app/app
+      - db_data:/app/data 
     env_file:
       - .env
     command: >
@@ -15,3 +18,18 @@ services:
       --host 0.0.0.0
       --port 8000
       --reload
+
+  seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: seeder
+    volumes:
+      - ./app:/app/app 
+      - db_data:/app/data 
+    env_file:
+      - .env
+    command: python -m app.seeder
+
+volumes:
+  db_data:

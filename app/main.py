@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     await fetch_rss(
         db=db,
         rss_url=settings.DONOR_RSS_URL,
-        max_articles=5,
+        max_articles=settings.MAX_ARTICLES,
         user_agent=settings.USER_AGENT,
     )
     asyncio.create_task(schedule_fetch(app))

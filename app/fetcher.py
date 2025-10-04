@@ -52,8 +52,8 @@ async def fetch_full_content(db: Database, article_id: int, url: str) -> Optiona
 async def fetch_rss(
     db: Database,
     rss_url: str,
-    max_articles: int = 20,
-    user_agent: str = "RSSFetcher/1.0",
+    max_articles: int,
+    user_agent: str,
 ) -> List[str]:
     headers = {"User-Agent": user_agent}
     new_articles: List[str] = []
