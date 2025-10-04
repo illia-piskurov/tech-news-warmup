@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     FETCH_INTERVAL_MIN: int
     USER_AGENT: str
     GA_MEASUREMENT_ID: str
+    ARTICLES_PER_PAGE: int = 10
 
     model_config = SettingsConfigDict(
         env_file=str(DOTENV) if DOTENV.exists() else None,

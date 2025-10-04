@@ -100,15 +100,33 @@ async def index(
     request: Request,
     db: Annotated[Database, Depends(get_db)],
     settings: Annotated[config.Settings, Depends(get_settings)],
+    page: int = 1,
 ):
-    query = articles.select().order_by(articles.c.pub_date.desc()).limit(10)
+    count_query = sqlalchemy.select(sqlalchemy.func.count()).select_from(articles)
+    total_articles = await db.fetch_val(count_query)
+
+    offset = (page - 1) * settings.ARTICLES_PER_PAGE
+
+    query = (
+        articles.select()
+        .order_by(articles.c.pub_date.desc())
+        .limit(settings.ARTICLES_PER_PAGE)
+        .offset(offset)
+    )
     rows = await db.fetch_all(query)
+
+    total_pages = (
+        total_articles + settings.ARTICLES_PER_PAGE - 1
+    ) // settings.ARTICLES_PER_PAGE
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "articles": rows,
             "ga_measurement_id": settings.GA_MEASUREMENT_ID,
+            "current_page": page,
+            "total_pages": total_pages,
         },
     )
 
